@@ -61,7 +61,7 @@ async function importMedia(event: Event) {
   align-items: center;
   justify-content: space-between;
 
-  padding: var(--low-spacing) var(--high-spacing);
+  padding: var(--low-spacing) var(--huge-spacing);
 
   .actions--right {
     display: flex;

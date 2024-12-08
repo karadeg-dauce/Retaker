@@ -11,6 +11,7 @@ import router from '@adonisjs/core/services/router'
 import ffmpeg from 'fluent-ffmpeg';
 import app from '@adonisjs/core/services/app'
 import fs from 'fs'
+import Video from '#models/video'
 
 export async function getVideoMetadata(filePath: string) {
   return new Promise((resolve, reject) => {
@@ -53,17 +54,41 @@ router.get('/uploads/:filename', async ({ params, response }) => {
 
 
 router.post('/upload', async ({ request, response }) => {
+  const payload = request.only(['name', 'description', 'author']);
+  const thumbnail = request.file('thumbnail');
   const file = request.file('file', {
     extnames: ['mp4', 'gif'],
     size: '100mb',
   });
 
+  // If not video, send invalid request
   if (!file) {
     return response.badRequest('Invalid file');
   }
 
-  await file.move('./uploads');
-  return { path: `/uploads/${file.fileName}` };
+  // Handle thumbnail save in backends
+  const thumbnailName: string = thumbnail
+    ? `${new Date().getTime()}_${thumbnail.clientName}`
+    : `${new Date().getTime()}_default`;
+  if (thumbnail) {
+    await thumbnail.move('./thumbnails', { name: thumbnailName });
+  }
+
+  // Handle the save of the video
+  const videoName = `${new Date().getTime()}_${file.fileName}`;
+  await file.move('./uploads', { name: videoName });
+
+  // Create an instance of video in the db
+  const newVideo = await Video.create({
+    name: payload.name,
+    description: payload.description,
+    author: payload.author,
+    url: `/uploads/${videoName}`,
+    thumbnail_url: `/thumbnails/${thumbnailName}`,
+  });
+
+
+  return response.json(newVideo);
 });
 
 router.get('/videos', async ({ response }) => {

@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { convertDuration } from '@/services/utils.ts'
 import DrawingLayer from '@/components/DrawingLayer.vue'
 

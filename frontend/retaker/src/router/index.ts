@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Timeline from '@/components/Timeline.vue'
+import ListMedia from '@/components/ListMedia.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,6 +8,11 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      component: ListMedia,
+    },
+    {
+      path: '/player/:name',
+      name: 'player',
       component: Timeline,
     },
   ],
