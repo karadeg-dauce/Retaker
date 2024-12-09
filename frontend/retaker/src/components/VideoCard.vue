@@ -2,6 +2,7 @@
   <div class="video-card">
     <div class="info--left">
       <h3>{{ video.name }}</h3>
+      <img :src="video.thumbnail_url" alt="">
       <p>url : {{ video.url }}</p>
     </div>
     <div class="info--right">

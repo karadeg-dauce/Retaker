@@ -41,13 +41,13 @@ router.post('/upload', async ({ request, response }) => {
   }
 
   // Handle the save of the video
-  const videoName = `${new Date().getTime()}_${file.fileName}`;
+  const videoName = `${new Date().getTime()}_${payload.name}`;
   await file.move('./uploads', { name: videoName });
 
   // Retrieve fps
   let fps = 30;
   try {
-    fps = await getVideoMetadata(`./uploads${videoName}`);
+    fps = await getVideoMetadata(`./uploads/${videoName}`);
   }
   catch (error) {
     return response.status(500).send({error: error.message});
@@ -59,7 +59,7 @@ router.post('/upload', async ({ request, response }) => {
     description: payload.description,
     author: payload.author,
     url: `/uploads/${videoName}`,
-    fps: fps,
+    fps: fps.value,
     thumbnail_url: `/thumbnails/${thumbnailName}`,
   });
 
@@ -100,15 +100,15 @@ router.get('/video/:filename', async ({ params, response }) => {
  * Retrieve the fps of a video placed at the following filePath
  * @param filePath string
  */
-export async function getVideoMetadata(filePath: string): Promise<number> {
+export async function getVideoMetadata(filePath: string): Promise<{ value: number }> {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(filePath, (err, metadata) => {
       if (err) {
         return reject(err);
       }
       const fps = metadata.streams[0].r_frame_rate; // Exemple pour récupérer le FPS
-      const fpsParsed = Number(fps.split('/')[0]);
-      resolve({ fpsParsed });
+      const value = Number(fps.split('/')[0]);
+      resolve({ value });
     });
   });
 }

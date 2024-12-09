@@ -3,9 +3,9 @@
     <h1 class="title">Retaker</h1>
     <div class="actions--right">
       <div class="button--icon">
-        <label for="importFile"><i class="material-icons">download</i></label>
-        <input id="importFile" name="importFile" class="field--import" type="file" @change="importMedia" accept="video/*,image/gif" />
-        <p v-if="uploadStatus">{{ uploadStatus }}</p>
+        <router-link to="/upload">
+          <i class="material-icons">upload</i>
+        </router-link>
       </div>
     </div>
   </div>
@@ -60,10 +60,6 @@ async function importMedia(event: Event) {
   .actions--right {
     display: flex;
     flex-direction: row;
-
-    .field--import {
-      display: none;
-    }
 
     > * {
       margin-left: var(--low-spacing);

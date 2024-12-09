@@ -14,7 +14,7 @@ import VideoCard from '@/components/VideoCard.vue'
 const listVideos = ref([]);
 
 async function fetchVideos() {
-  const response = await api.get('/videos');
+  const response = await api.get('/videos-metadata');
   return response.data; // [{ name: 'video.mp4', url: '/uploads/video.mp4' }]
 }
 

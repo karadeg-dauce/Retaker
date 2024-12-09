@@ -19,3 +19,14 @@
   align-items: center;
   margin-right: var(--low-spacing);
 }
+
+/* BUTTON */
+button {
+  padding: var(--medium-spacing) var(--high-spacing);
+  border: none;
+  border-radius: var(--low-spacing);
+  background-color: var(--main-color);
+  color: white;
+
+  cursor: pointer;
+}
