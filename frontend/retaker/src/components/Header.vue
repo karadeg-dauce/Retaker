@@ -6,18 +6,12 @@
         <label for="importFile"><i class="material-icons">download</i></label>
         <input id="importFile" name="importFile" class="field--import" type="file" @change="importMedia" accept="video/*,image/gif" />
         <p v-if="uploadStatus">{{ uploadStatus }}</p>
-
-      </div>
-      <div class="backend__button">
-        <button @click="testBackend">Test Connection</button>
-        <p>{{ message }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
 import { ref } from 'vue';
 import api from '@/services/api';
 

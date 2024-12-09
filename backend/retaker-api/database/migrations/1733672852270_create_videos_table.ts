@@ -11,6 +11,7 @@ export default class extends BaseSchema {
       table.string('thumbnail_url').nullable(); // URL de la miniature
       table.text('description').nullable(); // Description de la vidéo
       table.string('author').nullable(); // Auteur
+      table.integer('fps').nullable(); // Framerate de la video
       table.timestamps(true); // Champs created_at et updated_at
     });
   }

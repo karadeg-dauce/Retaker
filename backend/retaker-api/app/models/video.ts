@@ -20,6 +20,9 @@ export default class Video extends BaseModel {
   @column()
   public author!: string;
 
+  @column()
+  public fps!: number;
+
   @column.dateTime({ autoCreate: true })
   public createdAt!: DateTime;
 

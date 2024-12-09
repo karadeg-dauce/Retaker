@@ -21,10 +21,9 @@ const props = defineProps({
  * Redirect to the page of the video
  */
 function openVideo() {
-  console.log('video open')
+  router.push
 }
 </script>
-.video-card {
 
 <style scoped>
 .video-card {

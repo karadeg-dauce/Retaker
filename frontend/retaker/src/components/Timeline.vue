@@ -30,9 +30,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { convertDuration } from '@/services/utils.ts'
 import DrawingLayer from '@/components/DrawingLayer.vue'
+import api from '@/services/api.ts'
 
 const videoUrl = ref("/test.mp4");
 const videoPlayer = ref<HTMLVideoElement | null>(null);
@@ -46,6 +47,15 @@ const displayedCurrentTime = ref('0:00');
 const currentTime = ref(0);
 const frameDuration = ref(0.1)
 const isPlay = ref(false);
+
+onMounted(() => {
+
+})
+
+async function fetchVideos() {
+  const response = await api.get(`/videos/${videoUrl.value}`);
+  return response.data; // [{ name: 'video.mp4', url: '/uploads/video.mp4' }]
+}
 
 /**
  * Update the currentTime and the dispayedCurrentTime

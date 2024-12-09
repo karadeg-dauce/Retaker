@@ -11,7 +11,7 @@ const router = createRouter({
       component: ListMedia,
     },
     {
-      path: '/player/:name',
+      path: '/player/:id',
       name: 'player',
       component: Timeline,
     },

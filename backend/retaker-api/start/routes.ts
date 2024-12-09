@@ -10,49 +10,15 @@
 import router from '@adonisjs/core/services/router'
 import ffmpeg from 'fluent-ffmpeg';
 import app from '@adonisjs/core/services/app'
-import fs from 'fs'
 import Video from '#models/video'
-
-export async function getVideoMetadata(filePath: string) {
-  return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(filePath, (err, metadata) => {
-      if (err) {
-        return reject(err);
-      }
-      const fps = metadata.streams[0].r_frame_rate; // Exemple pour récupérer le FPS
-      const duration = metadata.format.duration; // Durée de la vidéo
-      resolve({ fps, duration });
-    });
-  });
-}
-
-// Exemple d'utilisation
-router.get('/video-metadata/:filename', async ({ params, response }) => {
-  const filePath = app.makePath(`uploads/${params.filename}`);
-  try {
-    const metadata = await getVideoMetadata(filePath);
-    return response.json(metadata);
-  } catch (error) {
-    return response.status(500).send(error.message);
-  }
-});
-router.get('/', async () => {
-  return {
-    hello: 'world',
-  }
-})
 
 router.get('/ping', async () => {
   return { message: 'Backend is working!' };
 });
 
-// Rendre les fichiers du dossier 'uploads' accessibles publiquement
-router.get('/uploads/:filename', async ({ params, response }) => {
-  const filePath = app.makePath(`uploads/${params.filename}`);
-  return response.download(filePath);
-});
-
-
+/**
+ * Upload a video to the upload directory, thumbnail to thumbnails directory and save metadata into db
+ */
 router.post('/upload', async ({ request, response }) => {
   const payload = request.only(['name', 'description', 'author']);
   const thumbnail = request.file('thumbnail');
@@ -78,12 +44,22 @@ router.post('/upload', async ({ request, response }) => {
   const videoName = `${new Date().getTime()}_${file.fileName}`;
   await file.move('./uploads', { name: videoName });
 
+  // Retrieve fps
+  let fps = 30;
+  try {
+    fps = await getVideoMetadata(`./uploads${videoName}`);
+  }
+  catch (error) {
+    return response.status(500).send({error: error.message});
+  }
+
   // Create an instance of video in the db
   const newVideo = await Video.create({
     name: payload.name,
     description: payload.description,
     author: payload.author,
     url: `/uploads/${videoName}`,
+    fps: fps,
     thumbnail_url: `/thumbnails/${thumbnailName}`,
   });
 
@@ -91,14 +67,48 @@ router.post('/upload', async ({ request, response }) => {
   return response.json(newVideo);
 });
 
-router.get('/videos', async ({ response }) => {
-  const directory = app.makePath('uploads');
-  const files = fs.readdirSync(directory);
+/**
+ * Get all videos metadata in db
+ */
+router.get('/videos-metadata', async ({ response }) => {
+  const videosMetadata = await Video.all()
 
-  const videos = files.map((file: string) => ({
-    name: file,
-    url: `/uploads/${file}`,
-  }));
-
-  return response.json(videos);
+  return response.json(videosMetadata);
 });
+
+/**
+ * Get video metadata in db for a specific filename
+ */
+router.get('/video-metadata/:id', async ({ params, response }) => {
+  const videoMetadata = await Video.query().where('id', params.id);
+  if (videoMetadata) {
+    return response.status(404).send({error: 'Not found'});
+  } else {
+  return response.json(videoMetadata[0]);
+  }
+});
+
+/**
+ * Return the video with the specific filename
+ */
+router.get('/video/:filename', async ({ params, response }) => {
+  const filePath = app.makePath(`uploads/${params.filename}`);
+  return response.download(filePath);
+});
+
+/**
+ * Retrieve the fps of a video placed at the following filePath
+ * @param filePath string
+ */
+export async function getVideoMetadata(filePath: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) {
+        return reject(err);
+      }
+      const fps = metadata.streams[0].r_frame_rate; // Exemple pour récupérer le FPS
+      const fpsParsed = Number(fps.split('/')[0]);
+      resolve({ fpsParsed });
+    });
+  });
+}
