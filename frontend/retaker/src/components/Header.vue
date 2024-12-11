@@ -1,6 +1,8 @@
 <template>
 	<div class="header">
-		<h1 class="title">Retaker</h1>
+		<router-link to="/">
+			<h1 class="title">Retaker</h1>
+		</router-link>
 		<div class="actions--right">
 			<div class="button--icon">
 				<router-link to="/upload">

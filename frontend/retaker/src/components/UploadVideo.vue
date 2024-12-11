@@ -1,18 +1,5 @@
 <template>
 	<div class="upload-form">
-		<!-- Stepper Header -->
-		<!--    <div class="stepper">-->
-		<!--      <div-->
-		<!--        v-for="(step, index) in steps"-->
-		<!--        :key="index"-->
-		<!--        class="step"-->
-		<!--        :class="{ active: index === currentStep }"-->
-		<!--      >-->
-		<!--        <span class="step-number">{{ index + 1 }}</span>-->
-		<!--        <span class="step-label">{{ step.label }}</span>-->
-		<!--      </div>-->
-		<!--    </div>-->
-
 		<!-- Stepper Content -->
 		<form @submit.prevent="submitForm">
 			<div v-if="currentStep === 0" class="step-content">
